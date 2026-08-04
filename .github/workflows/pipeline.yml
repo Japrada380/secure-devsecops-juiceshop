@@ -48,7 +48,18 @@ jobs:
         with:
           name: cyclonedx-sbom
           path: sbom.json
+      - name: Build Docker Image
+        run: docker build --tag juice-shop:local .
 
+      - name: Run Trivy Image Scan
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: image
+          image-ref: juice-shop:local
+          format: table
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          exit-code: 0
 
       - name: Project Information
         run: |
