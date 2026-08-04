@@ -1,0 +1,16 @@
+rules:
+  - id: detect-eval
+    message: "Avoid using eval() due to code injection risks."
+    severity: ERROR
+    languages:
+      - javascript
+      - typescript
+    pattern: eval(...)
+    metadata:
+      category: security
+      technology:
+        - javascript
+      owasp:
+        - A03:2021-Injection
+      cwe:
+        - "CWE-95"
