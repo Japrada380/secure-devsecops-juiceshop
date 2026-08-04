@@ -52,7 +52,7 @@ jobs:
         run: docker build --tag juice-shop:local .
 
       - name: Run Trivy Image Scan
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: image
           image-ref: juice-shop:local
