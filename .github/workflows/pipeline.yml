@@ -1,0 +1,25 @@
+name: Secure DevSecOps Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  project-information:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Project Information
+        run: |
+          echo "====================================="
+          echo " Secure DevSecOps Pipeline"
+          echo "====================================="
+          echo "Repository:"
+          pwd
+          ls -la
