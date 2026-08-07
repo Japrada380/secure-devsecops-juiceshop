@@ -1,0 +1,43 @@
+name: Break Glass
+
+on:
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: "Reason for emergency activation"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  break-glass:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Create audit log
+        run: |
+          echo "=================================="
+          echo "BREAK GLASS ACTIVATED"
+          echo "Actor: ${{ github.actor }}"
+          echo "Reason: ${{ inputs.reason }}"
+          echo "Date: $(date -u)"
+          echo "=================================="
+
+      - name: Create Critical Issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: "CRITICAL - Break Glass Activated",
+              body: "Emergency workflow executed.\n\nActor: " + context.actor + "\nReason: ${{ inputs.reason }}",
+              labels: ["security", "critical"]
+            })
+            
