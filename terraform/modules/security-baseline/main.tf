@@ -1,11 +1,17 @@
 /*
 Security Baseline Module
+Prueba Técnica - Simon Movilidad
 
-Resources will be added incrementally:
+This module will progressively implement:
+
 - IAM
 - S3
+- VPC
+- RDS
 - KMS
+- Secrets Manager
 - CloudTrail
+- AWS Config
 - GuardDuty
 - Security Hub
 - WAF
