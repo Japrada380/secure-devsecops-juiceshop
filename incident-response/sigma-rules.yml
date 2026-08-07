@@ -1,0 +1,125 @@
+title: AWS IAM Privilege Escalation via AdministratorAccess
+id: sigma-001
+status: stable
+
+description: Detecta la asignación de la política AdministratorAccess a un usuario IAM.
+
+author: Simon Movilidad Technical Assessment
+
+logsource:
+  product: aws
+  service: cloudtrail
+
+detection:
+  selection:
+    eventName: AttachUserPolicy
+    requestParameters.policyArn: arn:aws:iam::aws:policy/AdministratorAccess
+
+  condition: selection
+
+falsepositives:
+  - Cambios de emergencia aprobados
+  - Mantenimiento autorizado
+
+level: critical
+
+tags:
+  - attack.privilege_escalation
+  - attack.t1078
+  - attack.t1098
+
+---
+
+title: AWS CloudTrail DeleteTrail Attempt
+id: sigma-002
+status: stable
+
+description: Detecta intentos de eliminar o deshabilitar CloudTrail.
+
+author: Simon Movilidad Technical Assessment
+
+logsource:
+  product: aws
+  service: cloudtrail
+
+detection:
+  selection:
+    eventName:
+      - DeleteTrail
+      - StopLogging
+
+  condition: selection
+
+falsepositives:
+  - Mantenimiento autorizado
+
+level: critical
+
+tags:
+  - attack.defense_evasion
+  - attack.t1562
+
+---
+
+title: SQL Injection Attempt
+id: sigma-003
+status: stable
+
+description: Detecta patrones comunes de SQL Injection en registros de aplicación.
+
+author: Simon Movilidad Technical Assessment
+
+logsource:
+  category: application
+
+detection:
+  keywords:
+    - "' OR 1=1"
+    - "UNION SELECT"
+    - "'--"
+    - "'#"
+    - "xp_cmdshell"
+    - "information_schema"
+
+  condition: keywords
+
+falsepositives:
+  - Pruebas de seguridad autorizadas
+
+level: high
+
+tags:
+  - attack.initial_access
+  - attack.t1190
+
+---
+
+title: AWS S3 Bulk GetObject Activity
+id: sigma-004
+status: stable
+
+description: Detecta múltiples operaciones GetObject sobre el mismo bucket.
+
+author: Simon Movilidad Technical Assessment
+
+logsource:
+  product: aws
+  service: cloudtrail
+
+detection:
+  selection:
+    eventName: GetObject
+
+  timeframe: 5m
+
+  condition: selection
+
+falsepositives:
+  - Procesos de respaldo
+  - Migraciones autorizadas
+
+level: high
+
+tags:
+  - attack.collection
+  - attack.exfiltration
