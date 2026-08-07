@@ -1,0 +1,17 @@
+# Default owners
+* @Japrada380
+
+# GitHub Actions workflows
+.github/workflows/* @Japrada380
+
+# Terraform
+terraform/* @Japrada380
+
+# Security rules
+.github/semgrep-rules/* @Japrada380
+
+# Incident Response
+ir-playbook/* @Japrada380
+
+# Sigma rules
+sigma-rules/* @Japrada380

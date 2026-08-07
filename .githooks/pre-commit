@@ -1,0 +1,26 @@
+#!/bin/sh
+
+echo "=================================="
+echo "Running Gitleaks pre-commit scan..."
+echo "=================================="
+
+# Verificar que Gitleaks exista
+if ! command -v gitleaks >/dev/null 2>&1; then
+    echo "ERROR: Gitleaks is not installed or is not available in PATH."
+    echo "Install it before committing."
+    exit 1
+fi
+
+# Escanear el repositorio
+gitleaks detect --no-banner --redact --source .
+
+if [ $? -ne 0 ]; then
+    echo ""
+    echo "ERROR: Gitleaks detected potential secrets."
+    echo "Commit blocked."
+    exit 1
+fi
+
+echo ""
+echo "SUCCESS: No secrets detected."
+exit 0
