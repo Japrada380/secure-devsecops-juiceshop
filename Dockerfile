@@ -1,1 +1,2 @@
-﻿FROM bkimminich/juice-shop:latest
+﻿FROM bkimminich/juice-shop:v20.0.0
+
