@@ -1,0 +1,26 @@
+env:
+  contexts:
+    - name: JuiceShop
+      urls:
+        - http://host.docker.internal:3000
+      includePaths:
+        - http://host.docker.internal:3000.*
+
+jobs:
+  - type: spider
+    parameters:
+      context: JuiceShop
+      maxDuration: 5
+
+  - type: passiveScan-wait
+
+  - type: activeScan
+    parameters:
+      context: JuiceShop
+      maxDuration: 10
+
+  - type: report
+    parameters:
+      template: traditional-html
+      reportDir: /zap/wrk
+      reportFile: zap-report.html
