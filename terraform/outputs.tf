@@ -1,3 +1,3 @@
 output "module_loaded" {
-  value = "security-baseline"
+  value = module.security_baseline.module_name
 }

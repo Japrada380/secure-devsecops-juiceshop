@@ -12,7 +12,7 @@ if ! command -v gitleaks >/dev/null 2>&1; then
 fi
 
 # Escanear el repositorio
-gitleaks detect --no-banner --redact --source .
+gitleaks detect --no-banner --redact --no-git --source .
 
 if [ $? -ne 0 ]; then
     echo ""
