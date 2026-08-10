@@ -6,10 +6,17 @@ on:
       - main
 
 jobs:
-  project-information:
+  security-pipeline:
     runs-on: ubuntu-latest
 
     steps:
+
+      # =====================================================
+      # PREPARACIÓN DEL ENTORNO
+      # Configura el runner e instala las herramientas
+      # necesarias para ejecutar el pipeline.
+      # =====================================================
+
       - name: Checkout Repository
         uses: actions/checkout@v4
 
@@ -17,16 +24,57 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-          
 
       - name: Install Semgrep
         run: |
           python -m pip install --upgrade pip
           pip install semgrep
 
+      - name: Install Checkov
+        run: python -m pip install checkov==3.3.9
+
+
+      # =====================================================
+      # ANÁLISIS ESTÁTICO DEL CÓDIGO
+      # Busca patrones inseguros antes de continuar
+      # con el resto del pipeline.
+      # =====================================================
+
       - name: Run Semgrep
         run: |
           semgrep --config auto --config .github/semgrep-rules .
+
+
+      # =====================================================
+      # DETECCIÓN DE SECRETOS
+      # Verifica que el repositorio no contenga
+      # credenciales, tokens o claves expuestas.
+      # =====================================================
+
+      - name: Run Gitleaks Scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
+      # =====================================================
+      # VALIDACIÓN DE INFRAESTRUCTURA (IaC)
+      # Analiza la infraestructura como código
+      # utilizando Checkov.
+      # =====================================================
+
+      - name: Run Checkov IaC Scan
+        run: |
+          checkov --directory . \
+            --framework dockerfile github_actions \
+            --soft-fail
+
+
+      # =====================================================
+      # ANÁLISIS DE DEPENDENCIAS
+      # Busca vulnerabilidades conocidas en el
+      # sistema de archivos y dependencias.
+      # =====================================================
 
       - name: Run Trivy FS Scan
         uses: aquasecurity/trivy-action@v0.36.0
@@ -36,6 +84,14 @@ jobs:
           format: table
           severity: CRITICAL,HIGH
           exit-code: 0
+
+
+      # =====================================================
+      # GENERACIÓN DEL SBOM
+      # Crea el inventario de componentes de la aplicación
+      # para facilitar la trazabilidad.
+      # =====================================================
+
       - name: Generate CycloneDX SBOM
         uses: aquasecurity/trivy-action@v0.36.0
         with:
@@ -49,8 +105,23 @@ jobs:
         with:
           name: cyclonedx-sbom
           path: sbom.json
+
+
+      # =====================================================
+      # CONSTRUCCIÓN DEL CONTENEDOR
+      # Genera la imagen Docker únicamente después
+      # de superar las validaciones anteriores.
+      # =====================================================
+
       - name: Build Docker Image
         run: docker build --tag juice-shop:local .
+
+
+      # =====================================================
+      # ANÁLISIS DE LA IMAGEN DOCKER
+      # Revisa vulnerabilidades presentes en la
+      # imagen final que será desplegada.
+      # =====================================================
 
       - name: Run Trivy Image Scan
         uses: aquasecurity/trivy-action@v0.36.0
@@ -62,18 +133,12 @@ jobs:
           ignore-unfixed: true
           exit-code: 0
 
-      - name: Install Checkov
-        run: python -m pip install checkov==3.3.9
 
-      - name: Run Checkov IaC Scan
-        run: |
-          checkov --directory . \
-            --framework dockerfile github_actions \
-            --soft-fail
-      - name: Run Gitleaks Scan
-        uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # =====================================================
+      # INFORMACIÓN FINAL DEL PIPELINE
+      # Muestra información general al finalizar
+      # la ejecución del workflow.
+      # =====================================================
 
       - name: Project Information
         run: |
@@ -83,4 +148,3 @@ jobs:
           echo "Repository:"
           pwd
           ls -la
-
