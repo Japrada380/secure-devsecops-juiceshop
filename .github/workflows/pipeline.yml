@@ -204,15 +204,20 @@ jobs:
             http://127.0.0.1:3000/api/Users/ > /dev/null
 
           login_payload="$(jq -n --arg email "$zap_user" --arg password "$zap_password" '{email: $email, password: $password}')"
-          curl --fail --silent --show-error \
+          zap_token="$(curl --fail --silent --show-error \
             --request POST \
             --header 'Content-Type: application/json' \
             --data "$login_payload" \
             http://127.0.0.1:3000/rest/user/login \
-            | jq -e '.authentication.token' > /dev/null
+            | jq -er '.authentication.token')"
 
-          echo "ZAP_AUTH_USER=$zap_user" >> "$GITHUB_ENV"
-          echo "ZAP_AUTH_PASSWORD=$zap_password" >> "$GITHUB_ENV"
+          echo "::add-mask::$zap_token"
+          curl --fail --silent --show-error \
+            --header "Authorization: Bearer $zap_token" \
+            http://127.0.0.1:3000/rest/user/whoami \
+            | jq -e --arg email "$zap_user" '.user.data.email == $email' > /dev/null
+
+          echo "ZAP_AUTH_TOKEN=$zap_token" >> "$GITHUB_ENV"
 
       - name: Extract Juice Shop OpenAPI definition
         run: |
@@ -227,8 +232,7 @@ jobs:
         run: |
           docker run --rm \
             --network dast-network \
-            --env ZAP_AUTH_USER \
-            --env ZAP_AUTH_PASSWORD \
+            --env ZAP_AUTH_TOKEN \
             --volume "$PWD:/zap/wrk:rw" \
             ghcr.io/zaproxy/zaproxy:2.17.0 \
             zap.sh -cmd -autorun /zap/wrk/.github/zap/automation.yaml

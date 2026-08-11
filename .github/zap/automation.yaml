@@ -7,46 +7,32 @@ env:
         - http://juice-shop-dast:3000.*
       excludePaths:
         - http://juice-shop-dast:3000/rest/user/logout.*
-      authentication:
-        method: json
-        parameters:
-          loginPageUrl: http://juice-shop-dast:3000/#/login
-          loginRequestUrl: http://juice-shop-dast:3000/rest/user/login
-          loginRequestBody: '{"email":"{%username%}","password":"{%password%}"}'
-        verification:
-          method: poll
-          loggedInRegex: '.*"email".*'
-          loggedOutRegex: '.*"user":\{\}.*'
-          pollFrequency: 30
-          pollUnits: seconds
-          pollUrl: http://juice-shop-dast:3000/rest/user/whoami
-          pollPostData: ""
-      sessionManagement:
-        method: headers
-        parameters:
-          Authorization: "Bearer {%json:authentication.token%}"
-      users:
-        - name: dast-user
-          credentials:
-            username: ${ZAP_AUTH_USER}
-            password: ${ZAP_AUTH_PASSWORD}
   parameters:
     failOnError: true
     failOnWarning: false
     progressToStdout: true
 
 jobs:
+  - type: replacer
+    parameters:
+      deleteAllRules: true
+    rules:
+      - description: Juice Shop ephemeral bearer token
+        url: http://juice-shop-dast:3000.*
+        matchType: req_header
+        matchString: Authorization
+        matchRegex: false
+        replacementString: Bearer ${ZAP_AUTH_TOKEN}
+
   - type: openapi
     parameters:
       apiFile: /zap/wrk/.github/zap/juice-shop-openapi.yaml
       context: JuiceShop
-      user: dast-user
       targetUrl: http://juice-shop-dast:3000
 
   - type: spider
     parameters:
       context: JuiceShop
-      user: dast-user
       maxDuration: 1
       maxDepth: 5
 
@@ -57,7 +43,6 @@ jobs:
   - type: activeScan
     parameters:
       context: JuiceShop
-      user: dast-user
       maxScanDurationInMins: 3
 
   - type: passiveScan-wait
