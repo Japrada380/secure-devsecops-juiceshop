@@ -29,7 +29,7 @@ jobs:
     steps:
       - name: Create audit issue
         id: audit
-        uses: actions/github-script@v8
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
         env:
           BREAK_GLASS_REASON: ${{ inputs.reason }}
           CHANGE_REFERENCE: ${{ inputs.change_reference }}
@@ -75,7 +75,7 @@ jobs:
     environment: break-glass-security-approval
     steps:
       - name: Record first approval
-        uses: actions/github-script@v8
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
         with:
           script: |
             await github.rest.issues.createComment({
@@ -97,7 +97,7 @@ jobs:
     environment: break-glass-operations-approval
     steps:
       - name: Record second approval
-        uses: actions/github-script@v8
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
         with:
           script: |
             await github.rest.issues.createComment({
@@ -119,7 +119,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Record authorization
-        uses: actions/github-script@v8
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
         env:
           CHANGE_REFERENCE: ${{ inputs.change_reference }}
         with:
