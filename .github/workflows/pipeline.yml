@@ -42,7 +42,7 @@ jobs:
 
       - name: Run Semgrep
         run: |
-          semgrep scan \
+          semgrep \
             --config auto \
             --config .github/semgrep-rules \
             --error \
