@@ -49,6 +49,7 @@ jobs:
       - name: Run Semgrep
         run: |
           semgrep \
+            --error \
             --config auto \
             --config .github/semgrep-rules \
             .
@@ -230,7 +231,39 @@ jobs:
             --env ZAP_AUTH_TOKEN \
             --volume "$PWD:/zap/wrk:rw" \
             ghcr.io/zaproxy/zaproxy:2.17.0 \
-            zap.sh -cmd -autorun /zap/wrk/.github/zap/automation.yaml
+            zap.sh -cmd -autorun /zap/wrk/.github/zap/automation.yaml \
+            2>&1 | tee .github/zap/reports/zap-run.log
+
+      - name: Enforce OpenAPI coverage
+        if: always() && hashFiles('.github/zap/reports/zap-run.log') != ''
+        run: |
+          python - "$GITHUB_STEP_SUMMARY" <<'PY'
+          import pathlib
+          import re
+          import sys
+          import yaml
+
+          spec = yaml.safe_load(pathlib.Path('.github/zap/juice-shop-openapi.yaml').read_text(encoding='utf-8'))
+          paths = spec.get('paths') or {}
+          expected = len(paths)
+          if expected == 0:
+              raise SystemExit('OpenAPI coverage cannot be calculated: the specification has no paths.')
+
+          log = pathlib.Path('.github/zap/reports/zap-run.log').read_text(encoding='utf-8', errors='replace')
+          match = re.search(r'Job openapi added\s+(\d+)\s+URLs?', log, re.IGNORECASE)
+          if not match:
+              raise SystemExit('OpenAPI coverage cannot be calculated: ZAP did not report imported URLs.')
+
+          imported = int(match.group(1))
+          coverage = min(imported / expected * 100, 100.0)
+          summary = f'### ZAP OpenAPI coverage\n\n- Specification paths: {expected}\n- URLs imported by ZAP: {imported}\n- Coverage: {coverage:.2f}%\n- Required: 80.00%\n'
+          print(summary)
+          with pathlib.Path(sys.argv[1]).open('a', encoding='utf-8') as stream:
+              stream.write(summary)
+
+          if coverage < 80:
+              raise SystemExit(f'OpenAPI coverage gate failed: {coverage:.2f}% is below 80%.')
+          PY
 
       - name: Upload ZAP reports
         if: always()
