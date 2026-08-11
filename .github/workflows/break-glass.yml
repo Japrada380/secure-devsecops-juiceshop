@@ -81,7 +81,11 @@ jobs:
             await github.rest.issues.createComment({
               ...context.repo,
               issue_number: Number('${{ needs.register.outputs.issue_number }}'),
-              body: `First approval completed by @${context.actor} through the protected security environment.`
+              body: [
+                'First approval completed through the protected security environment.',
+                '',
+                `Reviewer identity is recorded in the deployment protection log: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
+              ].join('\n')
             });
 
   approval_two:
@@ -99,7 +103,11 @@ jobs:
             await github.rest.issues.createComment({
               ...context.repo,
               issue_number: Number('${{ needs.register.outputs.issue_number }}'),
-              body: `Second approval completed by @${context.actor} through the protected operations environment.`
+              body: [
+                'Second approval completed through the protected operations environment.',
+                '',
+                `Reviewer identity is recorded in the deployment protection log: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
+              ].join('\n')
             });
 
   activate:
