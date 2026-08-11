@@ -9,6 +9,10 @@ jobs:
   security-pipeline:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+      issues: write
+
     steps:
 
       # =====================================================
@@ -139,6 +143,156 @@ jobs:
           ignore-unfixed: true
           trivyignores: .trivyignore.yaml
           exit-code: 1
+
+
+      # =====================================================
+      # DAST AUTENTICADO
+      # Registra un usuario efimero, importa el OpenAPI de la
+      # imagen y ejecuta ZAP con una sesion JWT autenticada.
+      # =====================================================
+
+      - name: Start Juice Shop for DAST
+        run: |
+          docker network create dast-network
+          docker run \
+            --detach \
+            --name juice-shop-dast \
+            --network dast-network \
+            --publish 127.0.0.1:3000:3000 \
+            juice-shop:local
+
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:3000/rest/admin/application-version > /dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+
+          docker logs juice-shop-dast
+          exit 1
+
+      - name: Create ephemeral DAST user
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          zap_user="zap-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}@example.invalid"
+          zap_password="$(openssl rand -hex 18)"
+          echo "::add-mask::$zap_password"
+
+          question_json="$(curl --fail --silent http://127.0.0.1:3000/api/SecurityQuestions/)"
+          question_id="$(jq -r '.data[0].id' <<< "$question_json")"
+          question_text="$(jq -r '.data[0].question' <<< "$question_json")"
+
+          registration_payload="$(jq -n \
+            --arg email "$zap_user" \
+            --arg password "$zap_password" \
+            --argjson question_id "$question_id" \
+            --arg question_text "$question_text" \
+            '{
+              email: $email,
+              password: $password,
+              passwordRepeat: $password,
+              securityQuestion: {id: $question_id, question: $question_text},
+              securityAnswer: "ephemeral-dast-user"
+            }')"
+
+          curl --fail --silent --show-error \
+            --request POST \
+            --header 'Content-Type: application/json' \
+            --data "$registration_payload" \
+            http://127.0.0.1:3000/api/Users/ > /dev/null
+
+          login_payload="$(jq -n --arg email "$zap_user" --arg password "$zap_password" '{email: $email, password: $password}')"
+          curl --fail --silent --show-error \
+            --request POST \
+            --header 'Content-Type: application/json' \
+            --data "$login_payload" \
+            http://127.0.0.1:3000/rest/user/login \
+            | jq -e '.authentication.token' > /dev/null
+
+          echo "ZAP_AUTH_USER=$zap_user" >> "$GITHUB_ENV"
+          echo "ZAP_AUTH_PASSWORD=$zap_password" >> "$GITHUB_ENV"
+
+      - name: Extract Juice Shop OpenAPI definition
+        run: |
+          docker cp juice-shop-dast:/juice-shop/swagger.yml .github/zap/juice-shop-openapi.yaml
+          test -s .github/zap/juice-shop-openapi.yaml
+          mkdir -p .github/zap/reports
+          chmod 0777 .github/zap/reports
+
+      - name: Run authenticated ZAP scan
+        id: zap_scan
+        continue-on-error: true
+        run: |
+          docker run --rm \
+            --network dast-network \
+            --env ZAP_AUTH_USER \
+            --env ZAP_AUTH_PASSWORD \
+            --volume "$PWD:/zap/wrk:rw" \
+            ghcr.io/zaproxy/zaproxy:2.17.0 \
+            zap.sh -cmd -autorun /zap/wrk/.github/zap/automation.yaml
+
+      - name: Upload ZAP reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap-authenticated-report
+          path: .github/zap/reports/
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Create Issue for MEDIUM ZAP findings
+        if: always() && hashFiles('.github/zap/reports/zap-report.json') != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = JSON.parse(fs.readFileSync('.github/zap/reports/zap-report.json', 'utf8'));
+            const alerts = (report.site || []).flatMap(site => site.alerts || []);
+            const medium = alerts.filter(alert => String(alert.riskcode) === '2');
+
+            if (medium.length === 0) {
+              core.info('No MEDIUM ZAP findings detected.');
+              return;
+            }
+
+            for (const label of [
+              { name: 'security', color: 'b60205' },
+              { name: 'medium', color: 'fbca04' }
+            ]) {
+              try {
+                await github.rest.issues.getLabel({ ...context.repo, name: label.name });
+              } catch (error) {
+                if (error.status !== 404) throw error;
+                await github.rest.issues.createLabel({ ...context.repo, ...label });
+              }
+            }
+
+            const details = medium.slice(0, 20).map(alert =>
+              `- **${alert.name}** (${alert.riskdesc}) - ${alert.instances?.length || 0} instance(s)`
+            ).join('\n');
+
+            await github.rest.issues.create({
+              ...context.repo,
+              title: `[DAST][MEDIUM] ZAP findings - run ${context.runId}`,
+              labels: ['security', 'medium'],
+              body: `Authenticated ZAP detected ${medium.length} MEDIUM alert type(s).\n\n${details}\n\nWorkflow run: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}\n\nSee the **zap-authenticated-report** artifact for complete evidence.`
+            });
+
+      - name: Enforce ZAP HIGH and CRITICAL gate
+        if: always()
+        run: |
+          if [ "${{ steps.zap_scan.outcome }}" != "success" ]; then
+            echo "Authenticated ZAP reported a HIGH/CRITICAL finding or an execution error."
+            exit 1
+          fi
+
+      - name: Stop DAST environment
+        if: always()
+        run: |
+          docker rm --force juice-shop-dast 2>/dev/null || true
+          docker network rm dast-network 2>/dev/null || true
 
 
       # =====================================================

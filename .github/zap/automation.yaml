@@ -2,25 +2,89 @@ env:
   contexts:
     - name: JuiceShop
       urls:
-        - http://host.docker.internal:3000
+        - http://juice-shop-dast:3000
       includePaths:
-        - http://host.docker.internal:3000.*
+        - http://juice-shop-dast:3000.*
+      excludePaths:
+        - http://juice-shop-dast:3000/rest/user/logout.*
+      authentication:
+        method: json
+        parameters:
+          loginPageUrl: http://juice-shop-dast:3000/#/login
+          loginRequestUrl: http://juice-shop-dast:3000/rest/user/login
+          loginRequestBody: '{"email":"{%username%}","password":"{%password%}"}'
+        verification:
+          method: poll
+          loggedInRegex: '.*"email".*'
+          loggedOutRegex: '.*"user":\{\}.*'
+          pollFrequency: 30
+          pollUnits: seconds
+          pollUrl: http://juice-shop-dast:3000/rest/user/whoami
+          pollPostData: ""
+      sessionManagement:
+        method: headers
+        parameters:
+          Authorization: "Bearer {%json:authentication.token%}"
+      users:
+        - name: dast-user
+          credentials:
+            username: ${ZAP_AUTH_USER}
+            password: ${ZAP_AUTH_PASSWORD}
+  parameters:
+    failOnError: true
+    failOnWarning: false
+    progressToStdout: true
 
 jobs:
-  - type: spider
+  - type: openapi
+    parameters:
+      apiFile: /zap/wrk/.github/zap/juice-shop-openapi.yaml
+      context: JuiceShop
+      user: dast-user
+      targetUrl: http://juice-shop-dast:3000
+
+  - type: spiderAjax
     parameters:
       context: JuiceShop
-      maxDuration: 5
+      user: dast-user
+      browserId: firefox-headless
+      maxDuration: 1
+      maxCrawlDepth: 5
 
   - type: passiveScan-wait
+    parameters:
+      maxDuration: 1
 
   - type: activeScan
     parameters:
       context: JuiceShop
-      maxDuration: 10
+      user: dast-user
+      maxScanDurationInMins: 3
+
+  - type: passiveScan-wait
+    parameters:
+      maxDuration: 1
 
   - type: report
     parameters:
       template: traditional-html
-      reportDir: /zap/wrk
+      reportDir: /zap/wrk/.github/zap/reports
       reportFile: zap-report.html
+      reportTitle: Juice Shop Authenticated DAST
+    alwaysRun: true
+
+  - type: report
+    parameters:
+      template: traditional-json
+      reportDir: /zap/wrk/.github/zap/reports
+      reportFile: zap-report.json
+      reportTitle: Juice Shop Authenticated DAST
+    alwaysRun: true
+
+  - type: exitStatus
+    parameters:
+      errorLevel: High
+      okExitValue: 0
+      warnExitValue: 0
+      errorExitValue: 1
+    alwaysRun: true
