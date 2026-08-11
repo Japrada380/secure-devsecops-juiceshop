@@ -43,13 +43,12 @@ jobs:
       user: dast-user
       targetUrl: http://juice-shop-dast:3000
 
-  - type: spiderAjax
+  - type: spider
     parameters:
       context: JuiceShop
       user: dast-user
-      browserId: firefox-headless
       maxDuration: 1
-      maxCrawlDepth: 5
+      maxDepth: 5
 
   - type: passiveScan-wait
     parameters:
