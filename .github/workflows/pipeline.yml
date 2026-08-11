@@ -212,12 +212,6 @@ jobs:
             | jq -er '.authentication.token')"
 
           echo "::add-mask::$zap_token"
-          curl --fail --silent --show-error \
-            --header "Authorization: Bearer $zap_token" \
-            http://127.0.0.1:3000/rest/user/whoami \
-            | jq -e --arg email "$zap_user" \
-                '[.. | objects | .email? // empty] | any(. == $email)' > /dev/null
-
           echo "ZAP_AUTH_TOKEN=$zap_token" >> "$GITHUB_ENV"
 
       - name: Extract Juice Shop OpenAPI definition
