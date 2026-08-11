@@ -1,17 +1,29 @@
-# Default owners
-* @Japrada380
+# ============================================================
+# CODEOWNERS
+# Secure DevSecOps - Simon Movilidad
+# Break Glass Policy
+# ============================================================
 
-# GitHub Actions workflows
-.github/workflows/* @Japrada380
+# Default owners (2 required approvers)
+* @Japrada380 @jhonalexrg4l-sudo
 
-# Terraform
-terraform/* @Japrada380
+# GitHub Actions Workflows
+.github/workflows/* @Japrada380 @jhonalexrg4l-sudo
 
-# Security rules
-.github/semgrep-rules/* @Japrada380
+# Terraform Infrastructure
+terraform/** @Japrada380 @jhonalexrg4l-sudo
+
+# Security Rules
+.github/semgrep-rules/** @Japrada380 @jhonalexrg4l-sudo
+
+# OWASP ZAP
+.github/zap/** @Japrada380 @jhonalexrg4l-sudo
 
 # Incident Response
-ir-playbook/* @Japrada380
+incident-response/** @Japrada380 @jhonalexrg4l-sudo
 
-# Sigma rules
-sigma-rules/* @Japrada380
+# VAPT Documentation
+vapt/** @Japrada380 @jhonalexrg4l-sudo
+
+# Repository Documentation
+README.md @Japrada380 @jhonalexrg4l-sudo

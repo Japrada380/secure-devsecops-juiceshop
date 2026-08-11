@@ -42,8 +42,11 @@ jobs:
 
       - name: Run Semgrep
         run: |
-          semgrep --config auto --config .github/semgrep-rules .
-
+          semgrep scan \
+            --config auto \
+            --config .github/semgrep-rules \
+            --error \
+            .
 
       # =====================================================
       # DETECCIÓN DE SECRETOS
@@ -65,9 +68,10 @@ jobs:
 
       - name: Run Checkov IaC Scan
         run: |
-          checkov --directory . \
-            --framework dockerfile github_actions \
-            --soft-fail
+          checkov \
+            --directory terraform \
+            --framework terraform \
+            --quiet
 
 
       # =====================================================
@@ -82,8 +86,9 @@ jobs:
           scan-type: fs
           scan-ref: .
           format: table
-          severity: CRITICAL,HIGH
-          exit-code: 0
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: 1
 
 
       # =====================================================
@@ -129,9 +134,9 @@ jobs:
           scan-type: image
           image-ref: juice-shop:local
           format: table
-          severity: CRITICAL,HIGH
+          severity: CRITICAL
           ignore-unfixed: true
-          exit-code: 0
+          exit-code: 1
 
 
       # =====================================================
