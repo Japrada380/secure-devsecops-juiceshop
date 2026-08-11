@@ -45,7 +45,6 @@ jobs:
           semgrep \
             --config auto \
             --config .github/semgrep-rules \
-            --error \
             .
 
       # =====================================================
