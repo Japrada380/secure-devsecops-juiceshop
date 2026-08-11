@@ -1,0 +1,20 @@
+vulnerabilities:
+  - id: CVE-2023-46233
+    expired_at: 2026-09-10
+    statement: "Risk accepted temporarily by Security Engineering: crypto-js 3.3.0 is intentionally bundled in OWASP Juice Shop v20.0.0 for vulnerability demonstrations. Reassess before expiry."
+
+  - id: CVE-2026-71851
+    expired_at: 2026-09-10
+    statement: "Risk accepted temporarily by Security Engineering: crypto-js 3.3.0 is intentionally bundled in OWASP Juice Shop v20.0.0 for vulnerability demonstrations. Reassess before expiry."
+
+  - id: CVE-2015-9235
+    expired_at: 2026-09-10
+    statement: "Risk accepted temporarily by Security Engineering: vulnerable jsonwebtoken versions are intentional Juice Shop challenge dependencies used only in the isolated assessment environment. Reassess before expiry."
+
+  - id: CVE-2019-10744
+    expired_at: 2026-09-10
+    statement: "Risk accepted temporarily by Security Engineering: lodash 2.4.2 is an intentional Juice Shop challenge dependency used only in the isolated assessment environment. Reassess before expiry."
+
+  - id: CVE-2026-59873
+    expired_at: 2026-09-10
+    statement: "Risk accepted temporarily by Security Engineering: affected node-tar copies are transitive dependencies in the pinned Juice Shop training image. Reassess before expiry."
