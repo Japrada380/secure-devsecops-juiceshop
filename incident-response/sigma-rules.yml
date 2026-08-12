@@ -1,125 +1,98 @@
-title: AWS IAM Privilege Escalation via AdministratorAccess
-id: sigma-001
-status: stable
-
-description: Detecta la asignación de la política AdministratorAccess a un usuario IAM.
-
+title: AWS AdministratorAccess Attached to IAM User
+id: 0bb8f1b8-2c3a-4a88-a78b-c245a9899721
+status: experimental
+description: Detects attachment of the AWS managed AdministratorAccess policy to an IAM user.
 author: Simon Movilidad Technical Assessment
-
+date: 2026-08-12
 logsource:
   product: aws
   service: cloudtrail
-
 detection:
   selection:
+    eventSource: iam.amazonaws.com
     eventName: AttachUserPolicy
     requestParameters.policyArn: arn:aws:iam::aws:policy/AdministratorAccess
-
   condition: selection
-
 falsepositives:
-  - Cambios de emergencia aprobados
-  - Mantenimiento autorizado
-
+  - Approved emergency administration with a correlated change record
 level: critical
-
 tags:
-  - attack.privilege_escalation
-  - attack.t1078
+  - attack.persistence
+  - attack.privilege-escalation
   - attack.t1098
 
 ---
-
-title: AWS CloudTrail DeleteTrail Attempt
-id: sigma-002
-status: stable
-
-description: Detecta intentos de eliminar o deshabilitar CloudTrail.
-
+title: AWS CloudTrail Logging Disabled or Trail Deleted
+id: ebd6bd03-78c6-467b-bb3b-90ee5331b78d
+status: experimental
+description: Detects attempts to stop logging or delete an AWS CloudTrail trail.
 author: Simon Movilidad Technical Assessment
-
+date: 2026-08-12
 logsource:
   product: aws
   service: cloudtrail
-
 detection:
   selection:
+    eventSource: cloudtrail.amazonaws.com
     eventName:
       - DeleteTrail
       - StopLogging
-
   condition: selection
-
 falsepositives:
-  - Mantenimiento autorizado
-
+  - Approved trail migration with a correlated change record
 level: critical
-
 tags:
-  - attack.defense_evasion
-  - attack.t1562
+  - attack.defense-evasion
+  - attack.t1562.008
 
 ---
-
-title: SQL Injection Attempt
-id: sigma-003
-status: stable
-
-description: Detecta patrones comunes de SQL Injection en registros de aplicación.
-
+title: AWS IAM Console Login Without MFA
+id: c49fd5e5-1df4-4317-962a-5c671b5e9da4
+status: experimental
+description: Detects a successful IAM console login where MFA was not used.
 author: Simon Movilidad Technical Assessment
-
-logsource:
-  category: application
-
-detection:
-  keywords:
-    - "' OR 1=1"
-    - "UNION SELECT"
-    - "'--"
-    - "'#"
-    - "xp_cmdshell"
-    - "information_schema"
-
-  condition: keywords
-
-falsepositives:
-  - Pruebas de seguridad autorizadas
-
-level: high
-
-tags:
-  - attack.initial_access
-  - attack.t1190
-
----
-
-title: AWS S3 Bulk GetObject Activity
-id: sigma-004
-status: stable
-
-description: Detecta múltiples operaciones GetObject sobre el mismo bucket.
-
-author: Simon Movilidad Technical Assessment
-
+date: 2026-08-12
 logsource:
   product: aws
   service: cloudtrail
-
 detection:
   selection:
-    eventName: GetObject
-
-  timeframe: 5m
-
+    eventName: ConsoleLogin
+    responseElements.ConsoleLogin: Success
+    additionalEventData.MFAUsed: 'No'
   condition: selection
-
 falsepositives:
-  - Procesos de respaldo
-  - Migraciones autorizadas
-
+  - Legacy accounts under an approved MFA migration exception
 level: high
-
 tags:
-  - attack.collection
-  - attack.exfiltration
+  - attack.initial-access
+  - attack.t1078.004
+
+---
+title: AWS ECS Task Definition References Unapproved External Image
+id: b5ca28d9-6cf0-4e85-ae9d-8bdc03ac4c36
+status: experimental
+description: Detects registration of an ECS task definition referencing the scenario's unapproved external image.
+author: Simon Movilidad Technical Assessment
+date: 2026-08-12
+logsource:
+  product: aws
+  service: cloudtrail
+detection:
+  selection:
+    eventSource: ecs.amazonaws.com
+    eventName: RegisterTaskDefinition
+  image_indicator:
+    requestParameters.containerDefinitions|contains: docker.io/attacker/exfil:latest
+  condition: selection and image_indicator
+falsepositives:
+  - Authorized security testing in an isolated account
+level: critical
+tags:
+  - attack.execution
+  - attack.t1610
+
+# Bulk S3 access is intentionally not represented as a portable threshold rule here.
+# Reliable detection requires SIEM-specific aggregation by principal, bucket and time window,
+# with an environment-specific baseline and threshold. A single GetObject is not bulk activity.
+
