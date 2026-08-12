@@ -220,10 +220,25 @@ Las principales evidencias verificables son:
 - Los issues DAST representan hallazgos MEDIUM de ejecuciones específicas y sirven como evidencia de seguimiento.
 - El tiempo de espera de aprobadores humanos en Break Glass no representa tiempo de cómputo del pipeline principal.
 
-## Uso de inteligencia artificial
+## Estado actual y objetivo
 
-Se utilizó inteligencia artificial como apoyo para revisar configuraciones, interpretar errores, estructurar documentación y proponer controles. Cada cambio fue validado mediante herramientas determinísticas, ejecuciones del pipeline o revisión humana. Las decisiones de aceptación de riesgo, aprobación de emergencias y eventual despliegue en AWS permanecen bajo responsabilidad humana.
+El diagrama comparativo y la ruta de evolucion estan en [`docs/CURRENT_TARGET_SECURITY.md`](docs/CURRENT_TARGET_SECURITY.md).
 
+## Decisiones de arquitectura
+
+Los ADRs se encuentran en [`docs/adr/`](docs/adr/) y documentan gates de seguridad, validacion Terraform sin cuenta real y el diseno Break Glass.
+
+## Desafios y Proximos Pasos
+
+Los desafios tecnicos y el backlog priorizado estan documentados en [`docs/CHALLENGES_NEXT_STEPS.md`](docs/CHALLENGES_NEXT_STEPS.md).
+
+## Video de sustentacion
+
+**Pendiente de publicacion:** agregar aqui la URL de YouTube No listado despues de grabar el video final (maximo 10 minutos y camara visible durante toda la grabacion).
+
+## Reporte de IA
+
+El reporte obligatorio esta en [`docs/AI_REPORT.md`](docs/AI_REPORT.md). Incluye herramientas y tareas especificas, un error de seguridad generado por IA que fue detectado y corregido, y las actividades que no deben delegarse sin supervision humana.
 ## Autor
 
 **Jhon Alex Prada Gomez**
