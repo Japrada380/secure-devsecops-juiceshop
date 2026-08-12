@@ -1,0 +1,25 @@
+Vulnerabilidad:
+Stored Cross-Site Scripting (Stored XSS)
+
+Payload utilizado:
+
+<img src=x onerror=alert('XSS Feedback')>
+
+Ubicación:
+
+Customer Feedback
+
+Procedimiento:
+
+1. Se inició sesión con un usuario estándar.
+2. Se envió el payload mediante el formulario Customer Feedback.
+3. Se accedió al panel Administration con el usuario administrador.
+4. Se revisó el listado de comentarios.
+
+Resultado:
+
+El payload no se ejecutó y no fue posible demostrar una vulnerabilidad Stored XSS en esta versión de OWASP Juice Shop.
+
+Conclusión:
+
+Prueba realizada correctamente, pero la vulnerabilidad no pudo ser reproducida.

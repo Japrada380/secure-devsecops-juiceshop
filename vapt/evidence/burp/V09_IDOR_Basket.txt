@@ -1,0 +1,15 @@
+HTTP/1.1 200 OK
+Access-Control-Allow-Origin: *
+X-Content-Type-Options: nosniff
+X-Frame-Options: SAMEORIGIN
+Feature-Policy: payment 'self'
+X-Recruiting: /#/jobs
+Content-Type: application/json; charset=utf-8
+Content-Length: 555
+ETag: W/"22b-uaferHNc+KyHgwqQayb7YIxuYpQ"
+Vary: Accept-Encoding
+Date: Wed, 12 Aug 2026 02:32:02 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"status":"success","data":{"id":1,"coupon":null,"UserId":1,"createdAt":"2026-08-11T20:19:00.809Z","updatedAt":"2026-08-11T20:19:00.809Z","Products":[{"id":2,"name":"Jugo de naranja (1000ml)","description":"Made from oranges hand-picked by Uncle Dittmeyer.","price":2.99,"deluxePrice":2.49,"image":"orange_juice.jpg","createdAt":"2026-08-11T20:19:00.466Z","updatedAt":"2026-08-11T20:19:00.466Z","deletedAt":null,"BasketItem":{"ProductId":2,"BasketId":1,"id":2,"quantity":3,"createdAt":"2026-08-11T20:19:00.929Z","updatedAt":"2026-08-11T20:19:00.929Z"}}]}}

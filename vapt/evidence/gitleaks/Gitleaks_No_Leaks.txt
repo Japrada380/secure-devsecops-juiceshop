@@ -1,0 +1,4 @@
+PS C:\Proyectos\secure-devsecops-juiceshop> gitleaks detect --source . --no-git
+
+7:05AM INF scanned ~163589 bytes (163.59 KB) in 420ms
+7:05AM INF no leaks found
