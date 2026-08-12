@@ -163,13 +163,9 @@ El repositorio no utiliza `docker-compose.yml`; el pipeline administra directame
 
 ## VAPT
 
-Los entregables se encuentran en `vapt/report/`:
+El informe autoritativo se encuentra en [`vapt/VAPT_Report.md`](vapt/VAPT_Report.md). El estado consolidado esta en [`vapt/VAPT_Plan.md`](vapt/VAPT_Plan.md), y las PoC y evidencias asociadas estan organizadas en `vapt/poc-rate-limit.ps1` y `vapt/evidence/`.
 
-- `executive-summary.md`: resumen ejecutivo.
-- `attack-surface.md`: superficie de ataque.
-- `vulnerabilities.md`: vulnerabilidades, evidencia, impacto y recomendaciones.
-- `README.md`: alcance y navegación del informe.
-
+El directorio `vapt/report/` contiene documentos preliminares conservados unicamente para trazabilidad y no representa el estado final del entregable.
 ## Respuesta ante incidentes
 
 Los artefactos se encuentran en `incident-response/` e incluyen:
@@ -198,7 +194,7 @@ Los artefactos se encuentran en `incident-response/` e incluyen:
 |-- incident-response/
 |-- terraform/
 |   `-- modules/security-baseline/
-|-- vapt/report/
+|-- vapt/
 |-- .trivyignore.yaml
 |-- Dockerfile
 `-- README.md
@@ -233,27 +229,3 @@ Se utilizó inteligencia artificial como apoyo para revisar configuraciones, int
 **Jhon Alex Prada Gomez**
 
 Proyecto desarrollado como prueba técnica de Ingeniería de Ciberseguridad para Simon Movilidad.
-# V-10 – Hardcoded Credentials (CWE-798)
-
-## Estado
-
-No reproducible
-
----
-
-## Herramienta utilizada
-
-Gitleaks
-
----
-
-## Procedimiento
-
-Se ejecutó el análisis del repositorio utilizando Gitleaks para detectar credenciales, tokens, claves API y otros secretos incrustados en el código fuente.
-
-Comando ejecutado:
-
-```powershell
-gitleaks detect --source . --no-git
-
- 

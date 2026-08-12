@@ -1,0 +1,24 @@
+# Local backups created during documentation consolidation
+*.backup-*
+
+# Local Terraform working data and state
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+crash.log
+crash.*.log
+
+# Local environment and credential material
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Local reports and temporary files
+work/
+*.tmp
+*.temp
+

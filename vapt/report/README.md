@@ -1,44 +1,27 @@
-# Vulnerability Assessment & Penetration Testing
+# Documentación VAPT histórica
 
-## Target
+Los archivos de este directorio corresponden a una estructura preliminar del informe VAPT y se conservan únicamente para trazabilidad del proceso.
 
-OWASP Juice Shop
+No representan el estado final del entregable y pueden contener clasificaciones o estados anteriores a la consolidación.
 
-## Objective
+## Documento vigente
 
-Perform a security assessment according to the Simon Movilidad technical challenge.
+El informe autoritativo es:
 
-## Assessment Scope
+```text
+vapt/VAPT_Report.md
+```
 
-- Authentication
-- REST API
-- User Management
-- Product Management
-- Search
-- Shopping Basket
-- File Upload
+El estado consolidado de ejecución está en:
 
-## Deliverables
+```text
+vapt/VAPT_Plan.md
+```
 
-- Executive Summary
-- Attack Surface
-- Vulnerability Report
-- Remediation Report
+Las evidencias vigentes se encuentran en:
 
-## Standards and References
+```text
+vapt/evidence/
+```
 
-- OWASP Top 10 2021
-- OWASP Testing Guide
-- CVSS v3.1
-- CWE
-
-## Assessment Tools
-
-The assessment combined manual testing with automated security analysis using the following tools:
-
-- Burp Suite Community Edition
-- Browser Developer Tools
-- OWASP Juice Shop
-- Gitleaks
-- Semgrep
-- Trivy
+Ante cualquier diferencia entre estos archivos históricos y el informe consolidado, prevalece `vapt/VAPT_Report.md`.
