@@ -163,7 +163,7 @@ El repositorio no utiliza `docker-compose.yml`; el pipeline administra directame
 
 ## VAPT
 
-El informe autoritativo se encuentra en [`vapt/VAPT_Report.md`](vapt/VAPT_Report.md). El estado consolidado esta en [`vapt/VAPT_Plan.md`](vapt/VAPT_Plan.md), y las PoC y evidencias asociadas estan organizadas en `vapt/poc-rate-limit.ps1` y `vapt/evidence/`.
+El informe autoritativo se encuentra en [`vapt/VAPT_Report.md`](vapt/VAPT_Report.md). La version PDF lista para entrega esta en [`vapt/VAPT_Report.pdf`](vapt/VAPT_Report.pdf). El estado consolidado esta en [`vapt/VAPT_Plan.md`](vapt/VAPT_Plan.md), y las PoC y evidencias asociadas estan organizadas en `vapt/poc-rate-limit.ps1` y `vapt/evidence/`.
 
 El directorio `vapt/report/` contiene documentos preliminares conservados unicamente para trazabilidad y no representa el estado final del entregable.
 ## Respuesta ante incidentes

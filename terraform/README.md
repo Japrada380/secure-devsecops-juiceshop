@@ -109,6 +109,9 @@ terraform/
     └── waf.tf
 ```
 
+## Matriz de cumplimiento
+
+La evaluacion de 23 controles contra CIS AWS Foundations v1.4, ISO/IEC 27001:2022 y Ley 1581 esta en [`COMPLIANCE_MATRIX.md`](COMPLIANCE_MATRIX.md). La matriz diferencia PASS, PARTIAL y FAIL segun evidencia real del codigo; no constituye una certificacion formal.
 ## Reproducción de la validación local
 
 Desde `terraform/`:
