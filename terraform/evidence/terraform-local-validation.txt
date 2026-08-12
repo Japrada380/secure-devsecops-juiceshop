@@ -1,0 +1,34 @@
+Terraform local validation evidence
+===================================
+
+Date: 2026-08-12
+Working directory: C:\Proyectos\secure-devsecops-juiceshop\terraform
+Scope: Offline/local static validation. No AWS credentials used.
+
+Command:
+terraform version
+
+Result:
+Terraform v1.15.8
+on windows_amd64
++ provider registry.terraform.io/hashicorp/aws v6.58.0
+
+Command:
+terraform fmt -check -recursive
+
+Result:
+PASS - No formatting differences reported.
+
+Command:
+terraform validate -no-color
+
+Result:
+Success! The configuration is valid.
+
+Not executed:
+- terraform plan
+- terraform apply
+
+Reason:
+The assessment does not require a real AWS account. Plan and apply require authorized AWS credentials and may query or modify cloud resources.
+

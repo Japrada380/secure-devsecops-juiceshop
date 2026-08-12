@@ -233,3 +233,27 @@ Se utilizó inteligencia artificial como apoyo para revisar configuraciones, int
 **Jhon Alex Prada Gomez**
 
 Proyecto desarrollado como prueba técnica de Ingeniería de Ciberseguridad para Simon Movilidad.
+# V-10 – Hardcoded Credentials (CWE-798)
+
+## Estado
+
+No reproducible
+
+---
+
+## Herramienta utilizada
+
+Gitleaks
+
+---
+
+## Procedimiento
+
+Se ejecutó el análisis del repositorio utilizando Gitleaks para detectar credenciales, tokens, claves API y otros secretos incrustados en el código fuente.
+
+Comando ejecutado:
+
+```powershell
+gitleaks detect --source . --no-git
+
+ 
